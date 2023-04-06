@@ -17,6 +17,7 @@ async function bootstrap() {
       'Create, organize & review flashcards. Features review & quiz modes, user auth via JWT tokens & Swagger/OpenAPI docs.'
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
