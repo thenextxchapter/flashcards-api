@@ -11,31 +11,60 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   email String @unique
-  hash String
+  hash  String
 
   firstName String?
-  lastName String?
-  
-  flashcard Flashcard[]
+  lastName  String?
+
+  deck Deck[]
 
   @@map("users")
 }
 
 model Flashcard {
-  id Int @id @default(autoincrement())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   question String
-  answer String
+  answer   String
 
-  userId Int
-  user User @relation(fields: [userId], references: [id])
+  decks Deck[] @relation("FlashcardDeck")
+
+  tag Tag[] @relation("FlashcardTag")
 
   @@map("flashcards")
+}
+
+model Deck {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  flashcards Flashcard[] @relation("FlashcardDeck")
+
+  @@map("decks")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  flashcard Flashcard[] @relation("FlashcardTag")
+
+  @@map("tags")
 }
