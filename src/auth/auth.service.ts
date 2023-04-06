@@ -23,6 +23,8 @@ export class AuthService {
         data: {
           email: dto.email,
           hash,
+          firstName: dto.firstname,
+          lastName: dto.firstname,
         },
       });
 
@@ -57,7 +59,7 @@ export class AuthService {
   }
 
   async signToken(
-    userId: number,
+    userId: string,
     email: string
   ): Promise<{ access_token: string }> {
     const payload = {
