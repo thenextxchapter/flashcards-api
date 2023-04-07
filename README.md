@@ -1,73 +1,96 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Flashcards API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project is a RESTful API for creating and managing flashcards.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Getting Started
 
-## Description
+### Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-## Installation
+### Installation
+
+1. Clone the repository:
 
 ```bash
-$ yarn install
+git clone https://github.com/thenextxchapter/flashcards-api.git
+cd flashcards
 ```
 
-## Running the app
+2. Copy the example environment file and update it with your own settings:
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+cp .public.env
 ```
 
-## Test
+You may need to update the database connection settings in the .env file to match your environment.
+
+3. Load up the Docker container
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+db:dev:restart
 ```
 
-## Support
+This will start the database and run the database migrations to create the necessary tables.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+4. Start the server
 
-## Stay in touch
+```bash
+yarn start:dev
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### API documentation
 
-## License
+The API documentation will available at http://localhost:3000/
 
-Nest is [MIT licensed](LICENSE).
+### Usage
+
+The API exposes the following endpoints:
+
+#### Auth endpoints
+
+- `POST /auth/sigin` - Login with email and password
+- `POST /auth/signup` - Create a new user account
+
+#### User endpoints
+
+- `GET /users/me` - Get the current user
+- `PATCH /users/me` - Update the current user
+
+#### Flashcard endpoints
+
+- `GET /flashcards` - Get all flashcards
+- `GET /flashcards/:id` - Get a flashcard by id
+- `POST /flashcards` - Create a new flashcard
+- `PATCH /flashcards/:id` - Update a flashcard
+- `DELETE /flashcards/:id` - Delete a flashcard
+- `GET /flashcards/:id/decks` - Get all decks that a flashcard is in
+- `GET /flashcards/:id/decks/:deckId` - Get a deck that a flashcard is in
+- `GET /flashcards/:id/tags` - Get all tags that a flashcard is in
+- `GET /flashcards/:id/tags/:tagId` - Get a tag that a flashcard is in
+
+#### Deck endpoints
+
+- `GET /decks` - Get all decks
+- `GET /decks/:id` - Get a deck by id
+- `POST /decks` - Create a new deck
+- `PATCH /decks/:id` - Update a deck
+- `DELETE /decks/:id` - Delete a deck
+- `GET /decks/:id/flashcards` - Get all flashcards that are in a deck
+- `GET /decks/:id/flashcards/:flashcardId` - Get a flashcard that is in a deck
+
+#### Tag endpoints
+
+- `GET /tags` - Get all tags
+- `GET /tags/:id` - Get a tag by id
+- `POST /tags` - Create a new tag
+- `PATCH /tags/:id` - Update a tag
+- `DELETE /tags/:id` - Delete a tag
+- `GET /tags/:id/flashcards` - Get all flashcards that are in a tag
+- `GET /tags/:id/flashcards/:flashcardId` - Get a flashcard that is in a tag
+
+## Other ToDos or Features to Add Later
+- [ ] Implement Pagination, filtering, and sorting
+- [ ] Modify the User and Auth endpoints to not return the password and make the response more secure and lean
+- [ ] Implement a Review endpoint to allow users to review flashcards based on a schedule and algorithm to determine which flashcards to review
