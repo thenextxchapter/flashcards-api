@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFlashcardDto, DeckFlashcardDto } from './dto';
 import { UpdateFlashcardDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Flashcard } from '@prisma/client';
+import { Deck, Flashcard, Tag } from '@prisma/client';
 import { TagFlashcardDto } from './dto/tag-flashcard.dto';
 
 @Injectable()
@@ -12,33 +12,33 @@ export class FlashcardsService {
   async create(createFlashcardDto: CreateFlashcardDto): Promise<Flashcard> {
     const { question, answer, deckIds, tagIds } = createFlashcardDto;
 
+    let decks: Deck[] | null = null;
+    let tags: Tag[] | null = null;
+
     // Check if deckIds are valid
-    if (deckIds?.length) {
-      const validDeckIds = await this.prisma.deck.findMany({
+    if (deckIds && deckIds.length > 0) {
+      decks = await this.prisma.deck.findMany({
         where: { id: { in: deckIds } },
-        select: { id: true },
       });
-      if (validDeckIds.length !== deckIds.length) {
-        throw new NotFoundException(
-          `Decks: ${deckIds.filter(
-            (id) => !validDeckIds.map((deck) => deck.id).includes(id)
-          )} were not found`
-        );
+      if (decks.length !== deckIds.length) {
+        const validDecks = decks.map((deck) => deck.id);
+        const invalidDecks = deckIds.filter((id) => !validDecks.includes(id));
+
+        throw new NotFoundException(`Decks: ${invalidDecks} were not found `);
       }
     }
 
     // Check if tagIds are valid
-    if (tagIds?.length) {
-      const validTagIds = await this.prisma.tag.findMany({
+    if (tagIds && tagIds.length > 0) {
+      tags = await this.prisma.tag.findMany({
         where: { id: { in: tagIds } },
-        select: { id: true },
       });
-      if (validTagIds.length !== tagIds.length) {
-        throw new NotFoundException(
-          `Tags: ${tagIds.filter(
-            (id) => !validTagIds.map((tag) => tag.id).includes(id)
-          )} were not found`
-        );
+
+      if (tags.length !== tagIds.length) {
+        const validTags = tags.map((tag) => tag.id);
+        const invalidTags = tagIds.filter((id) => !validTags.includes(id));
+
+        throw new NotFoundException(`Tags: ${invalidTags} were not found `);
       }
     }
 
@@ -46,8 +46,12 @@ export class FlashcardsService {
       data: {
         question,
         answer,
-        decks: deckIds ? { connect: deckIds.map((id) => ({ id })) } : undefined,
-        tag: tagIds ? { connect: tagIds.map((id) => ({ id })) } : undefined,
+        decks: {
+          connect: decks?.map((deck) => ({ id: deck.id })) || [],
+        },
+        tag: {
+          connect: tags?.map((tag) => ({ id: tag.id })) || [],
+        },
       },
     });
     return flashcard;
