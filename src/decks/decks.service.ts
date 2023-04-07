@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDeckDto } from './dto/create-deck.dto';
 import { UpdateDeckDto } from './dto/update-deck.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Deck } from '@prisma/client';
+import { Deck, Flashcard } from '@prisma/client';
 import { FlashcardDeckDto } from './dto';
 
 @Injectable()
@@ -21,24 +21,24 @@ export class DecksService {
       throw new NotFoundException(`User #${userId} not found`);
     }
 
-    const flashcards = await this.prisma.flashcard.findMany({
-      where: {
-        id: {
-          in: flashcardIds,
-        },
-      },
-    });
+    let flashcards: Flashcard[] | null = null;
 
-    // Check if all flashcards exist
-    if (flashcards.length !== flashcardIds.length) {
-      const validFlashcards = flashcards.map((flashcard) => flashcard.id);
-      const invalidFlashcards = flashcardIds.filter(
-        (id) => !validFlashcards.includes(id)
-      );
+    // Check if flashcards exist
+    if (flashcardIds && flashcardIds.length > 0) {
+      flashcards = await this.prisma.flashcard.findMany({
+        where: { id: { in: flashcardIds } },
+      });
+      // Check if existing flashcards are valid
+      if (flashcards.length !== flashcardIds.length) {
+        const validFlashcards = flashcards.map((flashcard) => flashcard.id);
+        const invalidFlashcards = flashcardIds.filter(
+          (id) => !validFlashcards.includes(id)
+        );
 
-      throw new NotFoundException(
-        `flashcards: ${invalidFlashcards} were not found `
-      );
+        throw new NotFoundException(
+          `flashcards: ${invalidFlashcards} were not found `
+        );
+      }
     }
 
     return await this.prisma.deck.create({
@@ -49,7 +49,7 @@ export class DecksService {
           connect: { id: userId },
         },
         flashcards: {
-          connect: flashcards.map((flashcard) => ({ id: flashcard.id })),
+          connect: flashcards?.map((flashcard) => ({ id: flashcard.id })) || [],
         },
       },
     });

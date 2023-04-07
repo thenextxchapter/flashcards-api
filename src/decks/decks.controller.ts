@@ -77,10 +77,10 @@ export class DecksController {
     description: 'The ID of the deck to retrieve',
   })
   @ApiOkResponse({
-    description: 'The flashcards in the deck have been successfully retrieved',
+    description: 'Returns all flashcards in a deck',
     type: [FlashcardDeckDto],
   })
-  async getFlashcards(@Param('id') id: string): Promise<FlashcardDeckDto[]> {
+  getFlashcards(@Param('id') id: string): Promise<FlashcardDeckDto[]> {
     return this.decksService.getFlashcards(id);
   }
 
@@ -98,10 +98,10 @@ export class DecksController {
     description: 'The ID of the flashcard to retrieve',
   })
   @ApiOkResponse({
-    description: 'The flashcard in the deck has been successfully retrieved',
+    description: 'Returns one flashcard in a deck based on the ID',
     type: FlashcardDeckDto,
   })
-  async getFlashcard(
+  getFlashcard(
     @Param('id') id: string,
     @Param('flashcardId') flashcardId: string
   ): Promise<FlashcardDeckDto> {
